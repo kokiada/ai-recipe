@@ -4,7 +4,7 @@ import { generateMenuWithClaude, FridgeItem, Settings } from '@/lib/claude';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { fridgeItems, settings, userComment }: { fridgeItems: FridgeItem[], settings: Settings, userComment?: string } = body;
+    const { fridgeItems, settings, userComment, dishCount }: { fridgeItems: FridgeItem[], settings: Settings, userComment?: string, dishCount?: number } = body;
 
     if (!fridgeItems || !settings) {
       return NextResponse.json(
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const generatedMenu = await generateMenuWithClaude(fridgeItems, settings, userComment);
+    const generatedMenu = await generateMenuWithClaude(fridgeItems, settings, userComment, dishCount || 3);
     
     return NextResponse.json({ menu: generatedMenu });
   } catch (error) {

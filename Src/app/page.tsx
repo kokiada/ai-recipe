@@ -69,6 +69,7 @@ export default function RakurakuKondate() {
   const [editForm, setEditForm] = useState({ name: "", quantity: "", unit: "" })
   const [showAddForm, setShowAddForm] = useState(false)
   const [userComment, setUserComment] = useState("")
+  const [dishCount, setDishCount] = useState<number>(3)
 
 
   const toggleFridgeItem = (id: string) => {
@@ -140,6 +141,7 @@ export default function RakurakuKondate() {
           fridgeItems,
           settings,
           userComment,
+          dishCount,
         }),
       })
 
@@ -171,6 +173,25 @@ export default function RakurakuKondate() {
         <h1 className="text-3xl font-bold text-center text-orange-800 mb-8">らくらく献立</h1>
 
         <div className="space-y-6">
+          {/* コメント入力欄 */}
+          {/* 品数選択 */}
+          <div className="bg-white/70 rounded-xl p-4 border border-orange-200">
+            <label className="block text-sm font-medium text-orange-700 mb-3">
+              🍽️ 品数を選択
+            </label>
+            <div className="flex items-center space-x-3">
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={dishCount}
+                onChange={(e) => setDishCount(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
+                className="w-16 p-3 border border-orange-300 rounded-lg text-center text-lg font-medium focus:outline-none focus:ring-2 focus:ring-orange-400"
+              />
+              <span className="text-lg font-medium text-orange-700">品</span>
+            </div>
+          </div>
+
           {/* コメント入力欄 */}
           <div className="bg-white/70 rounded-xl p-4 border border-orange-200">
             <label className="block text-sm font-medium text-orange-700 mb-2">
@@ -249,50 +270,50 @@ export default function RakurakuKondate() {
           </div>
 
           <div className="space-y-4 mb-6">
-            <Card className="bg-white shadow-md border-l-4 border-orange-400">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-orange-700 flex items-center">
-                  🥘 主菜
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xl font-semibold text-gray-800">{currentMenu?.mainDish.name}</p>
-                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>⏱️ {currentMenu?.mainDish.cookingTime}分</span>
-                  <span>🔥 {currentMenu?.mainDish.calories}kcal</span>
-                </div>
-              </CardContent>
-            </Card>
+            {currentMenu?.dishes?.map((dish, index) => {
+              const borderColors = [
+                "border-orange-400",
+                "border-green-400", 
+                "border-blue-400",
+                "border-purple-400",
+                "border-pink-400",
+                "border-indigo-400",
+                "border-yellow-400",
+                "border-red-400",
+                "border-teal-400",
+                "border-cyan-400"
+              ];
+              
+              const textColors = [
+                "text-orange-700",
+                "text-green-700",
+                "text-blue-700", 
+                "text-purple-700",
+                "text-pink-700",
+                "text-indigo-700",
+                "text-yellow-700",
+                "text-red-700",
+                "text-teal-700",
+                "text-cyan-700"
+              ];
 
-            <Card className="bg-white shadow-md border-l-4 border-green-400">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-green-700 flex items-center">
-                  🥗 副菜
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xl font-semibold text-gray-800">{currentMenu?.sideDish.name}</p>
-                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>⏱️ {currentMenu?.sideDish.cookingTime}分</span>
-                  <span>🔥 {currentMenu?.sideDish.calories}kcal</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-md border-l-4 border-blue-400">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-blue-700 flex items-center">
-                  🍲 汁物
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xl font-semibold text-gray-800">{currentMenu?.soup.name}</p>
-                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>⏱️ {currentMenu?.soup.cookingTime}分</span>
-                  <span>🔥 {currentMenu?.soup.calories}kcal</span>
-                </div>
-              </CardContent>
-            </Card>
+              return (
+                <Card key={index} className={`bg-white shadow-md border-l-4 ${borderColors[index % borderColors.length]}`}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className={`text-lg ${textColors[index % textColors.length]} flex items-center`}>
+                      🍽️ {index + 1}品目
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xl font-semibold text-gray-800">{dish.name}</p>
+                    <div className="flex justify-between text-sm text-gray-600 mt-2">
+                      <span>⏱️ {dish.cookingTime}分</span>
+                      <span>🔥 {dish.calories}kcal</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {/* 合計情報 */}

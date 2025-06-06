@@ -4,33 +4,26 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+export interface Dish {
+  name: string;
+  cookingTime: number;
+  calories: number;
+  ingredients: string[];
+  recipe: string[];
+}
+
 export interface GeneratedMenu {
-  mainDish: {
-    name: string;
-    cookingTime: number;
-    calories: number;
-    ingredients: string[];
-    recipe: string[];
-  };
-  sideDish: {
-    name: string;
-    cookingTime: number;
-    calories: number;
-    ingredients: string[];
-    recipe: string[];
-  };
-  soup: {
-    name: string;
-    cookingTime: number;
-    calories: number;
-    ingredients: string[];
-    recipe: string[];
-  };
+  dishes: Dish[];
   totalTime: number;
   totalCalories: number;
   difficulty: "簡単" | "普通" | "少し手間";
   tags: string[];
   reasoning: string;
+  
+  // 後方互換性のため（既存のコードとの互換性）
+  mainDish?: Dish;
+  sideDish?: Dish;
+  soup?: Dish;
 }
 
 export interface FridgeItem {
@@ -50,7 +43,8 @@ export interface Settings {
 export async function generateMenuWithClaude(
   fridgeItems: FridgeItem[],
   settings: Settings,
-  userComment?: string
+  userComment?: string,
+  dishCount: number = 3
 ): Promise<GeneratedMenu> {
   const availableIngredients = fridgeItems
     .filter(item => item.available)
@@ -67,8 +61,15 @@ export async function generateMenuWithClaude(
     ? `\n【ユーザーからのリクエスト】\n${userComment.trim()}\n` 
     : '';
 
+  const getDishDescription = (count: number) => {
+    if (count === 1) return "料理1品"
+    if (count === 2) return "料理2品"
+    if (count === 3) return "献立（主菜1品、副菜1品、汁物1品）"
+    return `料理${count}品`
+  }
+
   const prompt = `
-あなたは経験豊富な料理研究家です。以下の条件で、今日の夕食の献立（主菜1品、副菜1品、汁物1品）を提案してください。
+あなたは経験豊富な料理研究家です。以下の条件で、今日の夕食の${getDishDescription(dishCount)}を提案してください。
 
 【利用可能な食材】
 ${availableIngredients}
@@ -91,38 +92,37 @@ ${allergyInfo}${commentSection}
 - 栄養バランスを考慮
 - 家族全員が食べられる料理
 - 利用可能な食材を最大限活用
+- 毎回違った料理や調理法を提案する
+- 季節感や時間帯を考慮した料理を心がける
 
 【回答形式】
 以下のJSON形式で回答してください：
 
 {
-  "mainDish": {
-    "name": "料理名",
-    "cookingTime": 15,
-    "calories": 300,
-    "ingredients": ["食材1", "食材2"],
-    "recipe": ["手順1", "手順2", "手順3"]
-  },
-  "sideDish": {
-    "name": "料理名",
-    "cookingTime": 10,
-    "calories": 50,
-    "ingredients": ["食材1", "食材2"],
-    "recipe": ["手順1", "手順2"]
-  },
-  "soup": {
-    "name": "料理名",
-    "cookingTime": 5,
-    "calories": 30,
-    "ingredients": ["食材1", "食材2"],
-    "recipe": ["手順1", "手順2"]
-  },
+  "dishes": [
+    {
+      "name": "料理名1",
+      "cookingTime": 15,
+      "calories": 300,
+      "ingredients": ["食材1", "食材2"],
+      "recipe": ["手順1", "手順2", "手順3"]
+    },
+    {
+      "name": "料理名2",
+      "cookingTime": 10,
+      "calories": 50,
+      "ingredients": ["食材1", "食材2"],
+      "recipe": ["手順1", "手順2"]
+    }
+  ],
   "totalTime": 25,
-  "totalCalories": 380,
+  "totalCalories": 350,
   "difficulty": "簡単",
   "tags": ["家族向け", "栄養満点"],
   "reasoning": "この献立を提案した理由を簡潔に説明"
 }
+
+※dishesには指定された品数分の料理を含めてください。
 
 難易度は「簡単」「普通」「少し手間」から選択してください。
 `;
@@ -131,7 +131,7 @@ ${allergyInfo}${commentSection}
     const message = await anthropic.messages.create({
       model: "claude-3-5-sonnet-20241022",
       max_tokens: 2000,
-      temperature: 0.7,
+      temperature: 1.0,
       messages: [
         {
           role: "user",
@@ -151,8 +151,15 @@ ${allergyInfo}${commentSection}
     const generatedMenu: GeneratedMenu = JSON.parse(jsonMatch[0]);
     
     // データの妥当性チェック
-    if (!generatedMenu.mainDish?.name || !generatedMenu.sideDish?.name || !generatedMenu.soup?.name) {
+    if (!generatedMenu.dishes || !Array.isArray(generatedMenu.dishes) || generatedMenu.dishes.length === 0) {
       throw new Error('献立の生成に失敗しました');
+    }
+
+    // 後方互換性のため、3品の場合は従来の形式も設定
+    if (generatedMenu.dishes.length === 3) {
+      generatedMenu.mainDish = generatedMenu.dishes[0];
+      generatedMenu.sideDish = generatedMenu.dishes[1];
+      generatedMenu.soup = generatedMenu.dishes[2];
     }
 
     return generatedMenu;
