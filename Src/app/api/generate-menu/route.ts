@@ -4,7 +4,14 @@ import { generateMenuWithClaude, FridgeItem, Settings } from '@/lib/claude';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { fridgeItems, settings, userComment, dishCount }: { fridgeItems: FridgeItem[], settings: Settings, userComment?: string, dishCount?: number } = body;
+    const { fridgeItems, settings, userComment, dishCount, enableShopping, shoppingBudget }: { 
+      fridgeItems: FridgeItem[], 
+      settings: Settings, 
+      userComment?: string, 
+      dishCount?: number,
+      enableShopping?: boolean,
+      shoppingBudget?: number 
+    } = body;
 
     if (!fridgeItems || !settings) {
       return NextResponse.json(
@@ -22,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const generatedMenu = await generateMenuWithClaude(fridgeItems, settings, userComment, dishCount || 3);
+    const generatedMenu = await generateMenuWithClaude(fridgeItems, settings, userComment, dishCount || 3, enableShopping, shoppingBudget || 500);
     
     return NextResponse.json({ menu: generatedMenu });
   } catch (error) {

@@ -70,6 +70,8 @@ export default function RakurakuKondate() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [userComment, setUserComment] = useState("")
   const [dishCount, setDishCount] = useState<number>(3)
+  const [enableShopping, setEnableShopping] = useState(false)
+  const [shoppingBudget, setShoppingBudget] = useState<number>(500)
 
 
   const toggleFridgeItem = (id: string) => {
@@ -142,6 +144,8 @@ export default function RakurakuKondate() {
           settings,
           userComment,
           dishCount,
+          enableShopping,
+          shoppingBudget,
         }),
       })
 
@@ -190,6 +194,35 @@ export default function RakurakuKondate() {
               />
               <span className="text-lg font-medium text-orange-700">品</span>
             </div>
+          </div>
+
+          {/* 買い足し設定 */}
+          <div className="bg-white/70 rounded-xl p-4 border border-orange-200">
+            <div className="flex items-center space-x-3 mb-3">
+              <Checkbox
+                id="enable-shopping"
+                checked={enableShopping}
+                onCheckedChange={(checked) => setEnableShopping(checked as boolean)}
+              />
+              <Label htmlFor="enable-shopping" className="text-base font-medium text-orange-700">
+                🛒 食材を買い足す
+              </Label>
+            </div>
+            {enableShopping && (
+              <div className="ml-6 flex items-center space-x-3">
+                <Label className="text-sm text-orange-700">予算：</Label>
+                <input
+                  type="number"
+                  min="100"
+                  max="2000"
+                  step="50"
+                  value={shoppingBudget}
+                  onChange={(e) => setShoppingBudget(Math.max(100, Math.min(2000, Number(e.target.value) || 500)))}
+                  className="w-20 p-2 border border-orange-300 rounded-lg text-center text-base focus:outline-none focus:ring-2 focus:ring-orange-400"
+                />
+                <span className="text-base text-orange-700">円</span>
+              </div>
+            )}
           </div>
 
           {/* コメント入力欄 */}
@@ -340,6 +373,32 @@ export default function RakurakuKondate() {
             <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-xl mb-6 border border-purple-200">
               <p className="text-sm text-purple-800 font-medium mb-1">🤖 AIからのコメント</p>
               <p className="text-sm text-purple-700">{currentMenu.reasoning}</p>
+            </div>
+          )}
+
+          {/* 買い足し食材リスト */}
+          {aiGeneratedMenu && currentMenu?.shoppingList && currentMenu.shoppingList.length > 0 && (
+            <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded-xl mb-6 border border-green-200">
+              <p className="text-sm text-green-800 font-medium mb-3">🛒 買い足し食材リスト</p>
+              <div className="space-y-2">
+                {currentMenu.shoppingList.map((item, index) => (
+                  <div key={index} className="flex justify-between items-center bg-white/60 p-3 rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-green-800">{item.name}</p>
+                      <p className="text-xs text-green-600">{item.reason}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-green-800">{item.price}円</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="border-t border-green-300 pt-2 mt-3">
+                  <div className="flex justify-between items-center">
+                    <p className="font-bold text-green-800">合計</p>
+                    <p className="font-bold text-green-800">{currentMenu.totalShoppingCost}円</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

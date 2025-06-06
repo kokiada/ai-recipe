@@ -12,6 +12,12 @@ export interface Dish {
   recipe: string[];
 }
 
+export interface ShoppingItem {
+  name: string;
+  price: number;
+  reason: string;
+}
+
 export interface GeneratedMenu {
   dishes: Dish[];
   totalTime: number;
@@ -19,6 +25,8 @@ export interface GeneratedMenu {
   difficulty: "簡単" | "普通" | "少し手間";
   tags: string[];
   reasoning: string;
+  shoppingList?: ShoppingItem[];
+  totalShoppingCost?: number;
   
   // 後方互換性のため（既存のコードとの互換性）
   mainDish?: Dish;
@@ -44,7 +52,9 @@ export async function generateMenuWithClaude(
   fridgeItems: FridgeItem[],
   settings: Settings,
   userComment?: string,
-  dishCount: number = 3
+  dishCount: number = 3,
+  enableShopping?: boolean,
+  shoppingBudget: number = 500
 ): Promise<GeneratedMenu> {
   const availableIngredients = fridgeItems
     .filter(item => item.available)
@@ -59,6 +69,10 @@ export async function generateMenuWithClaude(
 
   const commentSection = userComment && userComment.trim() 
     ? `\n【ユーザーからのリクエスト】\n${userComment.trim()}\n` 
+    : '';
+
+  const shoppingSection = enableShopping 
+    ? `\n【買い足し設定】\n予算: ${shoppingBudget}円以内で追加食材を購入可能\n` 
     : '';
 
   const getDishDescription = (count: number) => {
@@ -78,13 +92,17 @@ ${availableIngredients}
 ${familySize}
 
 【アレルギー情報】
-${allergyInfo}${commentSection}
+${allergyInfo}${commentSection}${shoppingSection}
 
 【重要な制約】
-- 【利用可能な食材】に記載された食材のみを使用してください
+${enableShopping 
+  ? `- 【利用可能な食材】を優先的に使用し、必要に応じて${shoppingBudget}円以内で追加食材を購入してください
+- 基本調味料（醤油、味噌、塩、砂糖、酢、油、だしの素など）は使用可能とします
+- 追加購入する食材は現実的な価格設定で、合計金額が予算内に収まるようにしてください` 
+  : `- 【利用可能な食材】に記載された食材のみを使用してください
 - 基本調味料（醤油、味噌、塩、砂糖、酢、油、だしの素など）は使用可能とします
 - 記載されていない食材は一切使用しないでください
-- やむを得ず追加が必要な場合は、理由欄で説明してください
+- やむを得ず追加が必要な場合は、理由欄で説明してください`}
 
 【要件】
 - 主婦が作りやすい現実的な料理
@@ -119,10 +137,18 @@ ${allergyInfo}${commentSection}
   "totalCalories": 350,
   "difficulty": "簡単",
   "tags": ["家族向け", "栄養満点"],
-  "reasoning": "この献立を提案した理由を簡潔に説明"
+  "reasoning": "この献立を提案した理由を簡潔に説明"${enableShopping ? `,
+  "shoppingList": [
+    {
+      "name": "追加食材名",
+      "price": 150,
+      "reason": "この食材を追加する理由"
+    }
+  ],
+  "totalShoppingCost": 150` : ''}
 }
 
-※dishesには指定された品数分の料理を含めてください。
+※dishesには指定された品数分の料理を含めてください。${enableShopping ? '\n※買い足し設定が有効な場合は、shoppingListに必要な追加食材とその価格を含めてください。' : ''}
 
 難易度は「簡単」「普通」「少し手間」から選択してください。
 `;
