@@ -39,10 +39,8 @@ interface Settings {
 
 export default function RakurakuKondate() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("home")
-  const [currentMenuIndex, setCurrentMenuIndex] = useState(0)
   const [isGeneratingMenu, setIsGeneratingMenu] = useState(false)
   const [aiGeneratedMenu, setAiGeneratedMenu] = useState<MenuSet | null>(null)
-  const [useAiMenu, setUseAiMenu] = useState(false)
   const [fridgeItems, setFridgeItems] = useState<FridgeItem[]>([
     { id: "1", name: "鶏肉", emoji: "🍗", available: true, quantity: "300", unit: "g" },
     { id: "2", name: "豚肉", emoji: "🥩", available: true, quantity: "200", unit: "g" },
@@ -72,59 +70,6 @@ export default function RakurakuKondate() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [userComment, setUserComment] = useState("")
 
-  // 献立データ（要件に基づく5パターン）
-  const menuSets: MenuSet[] = [
-    {
-      id: "1",
-      mainDish: { name: "鶏の照り焼き", cookingTime: 15, calories: 280 },
-      sideDish: { name: "キャベツのおひたし", cookingTime: 10, calories: 30 },
-      soup: { name: "わかめの味噌汁", cookingTime: 5, calories: 40 },
-      totalTime: 20,
-      totalCalories: 350,
-      difficulty: "簡単",
-      tags: ["家族向け", "定番"]
-    },
-    {
-      id: "2",
-      mainDish: { name: "豚の生姜焼き", cookingTime: 12, calories: 320 },
-      sideDish: { name: "人参のきんぴら", cookingTime: 8, calories: 50 },
-      soup: { name: "豆腐の味噌汁", cookingTime: 5, calories: 45 },
-      totalTime: 15,
-      totalCalories: 415,
-      difficulty: "簡単",
-      tags: ["ご飯に合う", "栄養満点"]
-    },
-    {
-      id: "3",
-      mainDish: { name: "親子丼", cookingTime: 10, calories: 550 },
-      sideDish: { name: "もやしナムル", cookingTime: 5, calories: 25 },
-      soup: { name: "わかめスープ", cookingTime: 3, calories: 15 },
-      totalTime: 12,
-      totalCalories: 590,
-      difficulty: "簡単",
-      tags: ["疲れた日", "時短"]
-    },
-    {
-      id: "4",
-      mainDish: { name: "鮭のムニエル", cookingTime: 18, calories: 250 },
-      sideDish: { name: "ほうれん草のおひたし", cookingTime: 8, calories: 20 },
-      soup: { name: "コーンスープ", cookingTime: 7, calories: 80 },
-      totalTime: 25,
-      totalCalories: 350,
-      difficulty: "普通",
-      tags: ["ヘルシー", "洋風"]
-    },
-    {
-      id: "5",
-      mainDish: { name: "麻婆豆腐", cookingTime: 20, calories: 200 },
-      sideDish: { name: "春雨サラダ", cookingTime: 10, calories: 60 },
-      soup: { name: "卵スープ", cookingTime: 5, calories: 50 },
-      totalTime: 25,
-      totalCalories: 310,
-      difficulty: "普通",
-      tags: ["中華風", "野菜たっぷり"]
-    }
-  ]
 
   const toggleFridgeItem = (id: string) => {
     setFridgeItems((prev) => prev.map((item) => (item.id === id ? { ...item, available: !item.available } : item)))
@@ -184,7 +129,6 @@ export default function RakurakuKondate() {
   // AI献立生成機能
   const generateMenuWithAI = async () => {
     setIsGeneratingMenu(true)
-    setUseAiMenu(true)
     
     try {
       const response = await fetch('/api/generate-menu', {
@@ -215,27 +159,11 @@ export default function RakurakuKondate() {
     } catch (error) {
       console.error('Menu generation error:', error)
       alert(error instanceof Error ? error.message : 'AI献立生成中にエラーが発生しました')
-      setUseAiMenu(false)
     } finally {
       setIsGeneratingMenu(false)
     }
   }
 
-  // 従来の献立生成機能（サンプルデータ使用）
-  const generateMenu = () => {
-    setIsGeneratingMenu(true)
-    setUseAiMenu(false)
-    setTimeout(() => {
-      setCurrentMenuIndex(Math.floor(Math.random() * menuSets.length))
-      setIsGeneratingMenu(false)
-      setCurrentScreen("menu")
-    }, 1500)
-  }
-
-  // 他の案を見る機能
-  const showNextMenu = () => {
-    setCurrentMenuIndex((prev) => (prev + 1) % menuSets.length)
-  }
 
   const renderHomeScreen = () => (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 p-4">
@@ -278,48 +206,7 @@ export default function RakurakuKondate() {
             </div>
           </Button>
 
-          {/* サブボタン - 従来の献立生成 */}
-          <Button
-            onClick={generateMenu}
-            disabled={isGeneratingMenu}
-            className="w-full h-16 text-lg font-bold bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white rounded-xl shadow-md"
-          >
-            <div className="flex items-center justify-center space-x-2">
-              <span className="text-2xl">{isGeneratingMenu ? "⏳" : "🍽️"}</span>
-              <span>おまかせ献立</span>
-            </div>
-          </Button>
 
-          {/* モード選択ボタン（要件に基づく） */}
-          <div className="grid grid-cols-3 gap-3">
-            <Button
-              onClick={() => setCurrentScreen("menu")}
-              className="h-16 text-sm font-medium bg-red-400 hover:bg-red-500 text-white rounded-xl shadow-md"
-            >
-              <div className="flex flex-col items-center">
-                <span className="text-lg">😴</span>
-                <span>疲れた日</span>
-              </div>
-            </Button>
-            <Button
-              onClick={() => setCurrentScreen("menu")}
-              className="h-16 text-sm font-medium bg-purple-400 hover:bg-purple-500 text-white rounded-xl shadow-md"
-            >
-              <div className="flex flex-col items-center">
-                <span className="text-lg">🎉</span>
-                <span>特別な日</span>
-              </div>
-            </Button>
-            <Button
-              onClick={() => setCurrentScreen("menu")}
-              className="h-16 text-sm font-medium bg-blue-400 hover:bg-blue-500 text-white rounded-xl shadow-md"
-            >
-              <div className="flex flex-col items-center">
-                <span className="text-lg">♻️</span>
-                <span>使い切り</span>
-              </div>
-            </Button>
-          </div>
 
           {/* サブメニュー */}
           <div className="space-y-3">
@@ -348,7 +235,7 @@ export default function RakurakuKondate() {
   )
 
   const renderMenuScreen = () => {
-    const currentMenu = useAiMenu && aiGeneratedMenu ? aiGeneratedMenu : menuSets[currentMenuIndex]
+    const currentMenu = aiGeneratedMenu
     
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 p-4">
@@ -363,11 +250,7 @@ export default function RakurakuKondate() {
           {/* 献立パターン表示 */}
           <div className="text-center mb-4">
             <span className="text-sm text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
-              {useAiMenu && aiGeneratedMenu ? (
-                <>✨ AI生成 • {currentMenu.difficulty}</>
-              ) : (
-                <>パターン {currentMenuIndex + 1}/5 • {currentMenu.difficulty}</>
-              )}
+              ✨ AI生成 • {currentMenu?.difficulty}
             </span>
           </div>
 
@@ -379,10 +262,10 @@ export default function RakurakuKondate() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-semibold text-gray-800">{currentMenu.mainDish.name}</p>
+                <p className="text-xl font-semibold text-gray-800">{currentMenu?.mainDish.name}</p>
                 <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>⏱️ {currentMenu.mainDish.cookingTime}分</span>
-                  <span>🔥 {currentMenu.mainDish.calories}kcal</span>
+                  <span>⏱️ {currentMenu?.mainDish.cookingTime}分</span>
+                  <span>🔥 {currentMenu?.mainDish.calories}kcal</span>
                 </div>
               </CardContent>
             </Card>
@@ -394,10 +277,10 @@ export default function RakurakuKondate() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-semibold text-gray-800">{currentMenu.sideDish.name}</p>
+                <p className="text-xl font-semibold text-gray-800">{currentMenu?.sideDish.name}</p>
                 <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>⏱️ {currentMenu.sideDish.cookingTime}分</span>
-                  <span>🔥 {currentMenu.sideDish.calories}kcal</span>
+                  <span>⏱️ {currentMenu?.sideDish.cookingTime}分</span>
+                  <span>🔥 {currentMenu?.sideDish.calories}kcal</span>
                 </div>
               </CardContent>
             </Card>
@@ -409,10 +292,10 @@ export default function RakurakuKondate() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-semibold text-gray-800">{currentMenu.soup.name}</p>
+                <p className="text-xl font-semibold text-gray-800">{currentMenu?.soup.name}</p>
                 <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>⏱️ {currentMenu.soup.cookingTime}分</span>
-                  <span>🔥 {currentMenu.soup.calories}kcal</span>
+                  <span>⏱️ {currentMenu?.soup.cookingTime}分</span>
+                  <span>🔥 {currentMenu?.soup.calories}kcal</span>
                 </div>
               </CardContent>
             </Card>
@@ -422,23 +305,23 @@ export default function RakurakuKondate() {
           <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4 rounded-xl mb-6 border border-orange-200">
             <div className="flex justify-between items-center mb-2">
               <p className="text-lg font-bold text-orange-800">
-                ⏱️ 合計: {currentMenu.totalTime}分
+                ⏱️ 合計: {currentMenu?.totalTime}分
               </p>
               <p className="text-lg font-bold text-orange-800">
-                🔥 {currentMenu.totalCalories}kcal
+                🔥 {currentMenu?.totalCalories}kcal
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {currentMenu.tags.map((tag, index) => (
+              {currentMenu?.tags.map((tag, index) => (
                 <span key={index} className="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
                   {tag}
                 </span>
-              ))}
+              )) || []}
             </div>
           </div>
 
           {/* AI生成の場合は理由を表示 */}
-          {useAiMenu && aiGeneratedMenu && currentMenu.reasoning && (
+          {aiGeneratedMenu && currentMenu?.reasoning && (
             <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-xl mb-6 border border-purple-200">
               <p className="text-sm text-purple-800 font-medium mb-1">🤖 AIからのコメント</p>
               <p className="text-sm text-purple-700">{currentMenu.reasoning}</p>
@@ -453,33 +336,13 @@ export default function RakurakuKondate() {
               </div>
             </Button>
             
-            {!useAiMenu ? (
-              <>
-                <Button 
-                  onClick={showNextMenu}
-                  variant="outline" 
-                  className="w-full h-14 text-base border-2 border-orange-300 text-orange-700 hover:bg-orange-50 rounded-xl"
-                >
-                  🔄 他の案を見る（あと{4 - currentMenuIndex}パターン）
-                </Button>
-                
-                <Button 
-                  onClick={generateMenu}
-                  variant="outline" 
-                  className="w-full h-12 text-sm border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg"
-                >
-                  🎲 もう一度生成する
-                </Button>
-              </>
-            ) : (
-              <Button 
-                onClick={generateMenuWithAI}
-                variant="outline" 
-                className="w-full h-14 text-base border-2 border-purple-300 text-purple-700 hover:bg-purple-50 rounded-xl"
-              >
-                ✨ AI献立を再生成
-              </Button>
-            )}
+            <Button 
+              onClick={generateMenuWithAI}
+              variant="outline" 
+              className="w-full h-14 text-base border-2 border-purple-300 text-purple-700 hover:bg-purple-50 rounded-xl"
+            >
+              ✨ AI献立を再生成
+            </Button>
           </div>
         </div>
       </div>
