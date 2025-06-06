@@ -339,8 +339,7 @@ export default function RakurakuKondate() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-xl font-semibold text-gray-800">{dish.name}</p>
-                    <div className="flex justify-between text-sm text-gray-600 mt-2">
-                      <span>⏱️ {dish.cookingTime}分</span>
+                    <div className="text-sm text-gray-600 mt-2">
                       <span>🔥 {dish.calories}kcal</span>
                     </div>
                   </CardContent>
@@ -351,12 +350,9 @@ export default function RakurakuKondate() {
 
           {/* 合計情報 */}
           <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4 rounded-xl mb-6 border border-orange-200">
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-center items-center mb-2">
               <p className="text-lg font-bold text-orange-800">
-                ⏱️ 合計: {currentMenu?.totalTime}分
-              </p>
-              <p className="text-lg font-bold text-orange-800">
-                🔥 {currentMenu?.totalCalories}kcal
+                🔥 合計: {currentMenu?.totalCalories}kcal
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
