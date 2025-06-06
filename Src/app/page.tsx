@@ -169,12 +169,6 @@ export default function RakurakuKondate() {
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 p-4">
       <div className="max-w-sm mx-auto pt-8">
         <h1 className="text-3xl font-bold text-center text-orange-800 mb-8">らくらく献立</h1>
-        
-        {/* 天気・気温表示（要件に基づく） */}
-        <div className="text-center mb-8">
-          <p className="text-lg text-orange-700">今日は晴れ ☀️ 20°C</p>
-          <p className="text-sm text-orange-600">温かい料理がおすすめです</p>
-        </div>
 
         <div className="space-y-6">
           {/* コメント入力欄 */}
