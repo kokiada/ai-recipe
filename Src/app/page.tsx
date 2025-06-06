@@ -70,6 +70,7 @@ export default function RakurakuKondate() {
   const [editingItem, setEditingItem] = useState<string | null>(null)
   const [editForm, setEditForm] = useState({ name: "", quantity: "", unit: "" })
   const [showAddForm, setShowAddForm] = useState(false)
+  const [userComment, setUserComment] = useState("")
 
   // 献立データ（要件に基づく5パターン）
   const menuSets: MenuSet[] = [
@@ -194,6 +195,7 @@ export default function RakurakuKondate() {
         body: JSON.stringify({
           fridgeItems,
           settings,
+          userComment,
         }),
       })
 
@@ -247,6 +249,20 @@ export default function RakurakuKondate() {
         </div>
 
         <div className="space-y-6">
+          {/* コメント入力欄 */}
+          <div className="bg-white/70 rounded-xl p-4 border border-orange-200">
+            <label className="block text-sm font-medium text-orange-700 mb-2">
+              💬 コメント（例：おつまみ、さっぱり系、など）
+            </label>
+            <textarea
+              value={userComment}
+              onChange={(e) => setUserComment(e.target.value)}
+              placeholder="作りたい料理のリクエストを入力してください"
+              className="w-full p-3 border border-orange-300 rounded-lg text-base resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+              rows={2}
+            />
+          </div>
+
           {/* メインボタン - AI献立生成 */}
           <Button
             onClick={generateMenuWithAI}

@@ -49,7 +49,8 @@ export interface Settings {
 
 export async function generateMenuWithClaude(
   fridgeItems: FridgeItem[],
-  settings: Settings
+  settings: Settings,
+  userComment?: string
 ): Promise<GeneratedMenu> {
   const availableIngredients = fridgeItems
     .filter(item => item.available)
@@ -62,6 +63,10 @@ export async function generateMenuWithClaude(
 
   const familySize = `大人${settings.adults}人、子供${settings.children}人`;
 
+  const commentSection = userComment && userComment.trim() 
+    ? `\n【ユーザーからのリクエスト】\n${userComment.trim()}\n` 
+    : '';
+
   const prompt = `
 あなたは経験豊富な料理研究家です。以下の条件で、今日の夕食の献立（主菜1品、副菜1品、汁物1品）を提案してください。
 
@@ -72,7 +77,7 @@ ${availableIngredients}
 ${familySize}
 
 【アレルギー情報】
-${allergyInfo}
+${allergyInfo}${commentSection}
 
 【重要な制約】
 - 【利用可能な食材】に記載された食材のみを使用してください
