@@ -191,6 +191,6 @@ ${enableShopping
     return generatedMenu;
   } catch (error) {
     console.error('Claude API Error:', error);
-    throw new Error('AI献立生成中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+    throw new Error('献立作成中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
   }
 }

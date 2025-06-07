@@ -226,11 +226,14 @@ export default function RakurakuKondate() {
             <div className="flex items-center space-x-3">
               <input
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 min="1"
                 max="10"
                 value={dishCount}
                 onChange={(e) => setDishCount(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
                 className="w-16 p-3 border border-orange-300 rounded-lg text-center text-lg font-medium focus:outline-none focus:ring-2 focus:ring-orange-400"
+                autoComplete="off"
               />
               <span className="text-lg font-medium text-orange-700">品</span>
             </div>
@@ -287,9 +290,9 @@ export default function RakurakuKondate() {
           >
             <div className="flex flex-col items-center space-y-2">
               <span className="text-4xl">{isGeneratingMenu ? "🤖" : "✨"}</span>
-              <span>{isGeneratingMenu ? "AI献立生成中..." : "AI献立生成"}</span>
+              <span>{isGeneratingMenu ? "献立作成中..." : "AI献立生成"}</span>
               <span className="text-lg font-medium">
-                {isGeneratingMenu ? "冷蔵庫から考えています" : "冷蔵庫の材料から作る！"}
+                {isGeneratingMenu ? "冷蔵庫の食材から献立を考えています" : "冷蔵庫の材料から作る！"}
               </span>
             </div>
           </Button>
