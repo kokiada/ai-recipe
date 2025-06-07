@@ -10,16 +10,33 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 type Screen = "home" | "menu" | "fridge" | "settings"
 
+interface Dish {
+  name: string
+  cookingTime: number
+  calories: number
+  ingredients?: string[]
+  recipe?: string[]
+}
+
+interface ShoppingItem {
+  name: string
+  price: number
+  reason: string
+}
+
 interface MenuSet {
   id: string
-  mainDish: { name: string; cookingTime: number; calories: number; ingredients?: string[]; recipe?: string[] }
-  sideDish: { name: string; cookingTime: number; calories: number; ingredients?: string[]; recipe?: string[] }
-  soup: { name: string; cookingTime: number; calories: number; ingredients?: string[]; recipe?: string[] }
+  dishes?: Dish[]
+  mainDish?: Dish
+  sideDish?: Dish
+  soup?: Dish
   totalTime: number
   totalCalories: number
   difficulty: "簡単" | "普通" | "少し手間"
   tags: string[]
   reasoning?: string
+  shoppingList?: ShoppingItem[]
+  totalShoppingCost?: number
 }
 
 interface FridgeItem {
