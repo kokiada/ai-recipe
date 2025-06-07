@@ -53,6 +53,7 @@ interface Settings {
   children: string
   allergies: string[]
   backgroundColor: string
+  themeColor: string
 }
 
 export default function RakurakuKondate() {
@@ -86,7 +87,8 @@ export default function RakurakuKondate() {
           adults: parsedSettings.adults || "2",
           children: parsedSettings.children || "1", 
           allergies: parsedSettings.allergies || [],
-          backgroundColor: parsedSettings.backgroundColor || "#ffffff"
+          backgroundColor: parsedSettings.backgroundColor || "#ffffff",
+          themeColor: parsedSettings.themeColor || "orange"
         }
       }
     }
@@ -95,6 +97,7 @@ export default function RakurakuKondate() {
       children: "1",
       allergies: [],
       backgroundColor: "#ffffff",
+      themeColor: "orange",
     }
   })
 
@@ -109,6 +112,22 @@ export default function RakurakuKondate() {
   useEffect(() => {
     document.documentElement.style.setProperty('--background', settings.backgroundColor)
   }, [settings.backgroundColor])
+
+  useEffect(() => {
+    const themeColors = {
+      orange: { primary: '#fb923c', secondary: '#fed7aa', text: '#ea580c' },
+      blue: { primary: '#3b82f6', secondary: '#bfdbfe', text: '#1d4ed8' },
+      green: { primary: '#10b981', secondary: '#a7f3d0', text: '#047857' },
+      purple: { primary: '#8b5cf6', secondary: '#c4b5fd', text: '#7c3aed' },
+      pink: { primary: '#ec4899', secondary: '#f9a8d4', text: '#be185d' },
+      red: { primary: '#ef4444', secondary: '#fca5a5', text: '#dc2626' }
+    }
+    
+    const colors = themeColors[settings.themeColor as keyof typeof themeColors] || themeColors.orange
+    document.documentElement.style.setProperty('--theme-primary', colors.primary)
+    document.documentElement.style.setProperty('--theme-secondary', colors.secondary)
+    document.documentElement.style.setProperty('--theme-text', colors.text)
+  }, [settings.themeColor])
 
   useEffect(() => {
     localStorage.setItem('rakuraku-settings', JSON.stringify(settings))
@@ -214,13 +233,13 @@ export default function RakurakuKondate() {
   const renderHomeScreen = () => (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 p-4">
       <div className="max-w-sm mx-auto pt-8">
-        <h1 className="text-3xl font-bold text-center text-orange-800 mb-8">らくらく献立</h1>
+        <h1 className="text-3xl font-bold text-center text-theme-text mb-8">らくらく献立</h1>
 
         <div className="space-y-6">
           {/* コメント入力欄 */}
           {/* 品数選択 */}
-          <div className="bg-white/70 rounded-xl p-4 border border-orange-200">
-            <label className="block text-sm font-medium text-orange-700 mb-3">
+          <div className="bg-white/70 rounded-xl p-4 border border-theme-secondary">
+            <label className="block text-sm font-medium text-theme-text mb-3">
               🍽️ 品数を選択
             </label>
             <div className="flex items-center space-x-3">
@@ -231,10 +250,10 @@ export default function RakurakuKondate() {
                 placeholder="3"
                 value={dishCount}
                 onChange={(e) => setDishCount(e.target.value)}
-                className="w-16 p-3 border border-orange-300 rounded-lg text-center text-lg font-medium focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="w-16 p-3 border border-theme-secondary rounded-lg text-center text-lg font-medium focus:outline-none focus:ring-2 focus:ring-theme-primary"
                 autoComplete="off"
               />
-              <span className="text-lg font-medium text-orange-700">品</span>
+              <span className="text-lg font-medium text-theme-text">品</span>
             </div>
           </div>
 
@@ -316,10 +335,6 @@ export default function RakurakuKondate() {
           </div>
         </div>
 
-        {/* 昨日の料理表示（要件に基づく） */}
-        <div className="mt-8 p-4 bg-white/70 rounded-lg">
-          <p className="text-sm text-orange-700 text-center">昨日は「親子丼」でした</p>
-        </div>
       </div>
     </div>
   )
@@ -745,6 +760,43 @@ export default function RakurakuKondate() {
                       style={{ backgroundColor: theme.color }}
                       title={theme.name}
                     />
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg text-gray-800">メインテーマ配色</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Label className="text-base font-medium text-gray-700 block">アクセントカラー</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { name: "オレンジ", color: "orange", bgColor: "#fb923c" },
+                    { name: "ブルー", color: "blue", bgColor: "#3b82f6" },
+                    { name: "グリーン", color: "green", bgColor: "#10b981" },
+                    { name: "パープル", color: "purple", bgColor: "#8b5cf6" },
+                    { name: "ピンク", color: "pink", bgColor: "#ec4899" },
+                    { name: "レッド", color: "red", bgColor: "#ef4444" }
+                  ].map((theme) => (
+                    <button
+                      key={theme.name}
+                      onClick={() => setSettings(prev => ({ ...prev, themeColor: theme.color }))}
+                      className={`flex flex-col items-center p-3 rounded-lg border-2 transition-all ${
+                        settings.themeColor === theme.color 
+                          ? "border-gray-800 border-4" 
+                          : "border-gray-300 hover:border-gray-500"
+                      }`}
+                    >
+                      <div 
+                        className="w-8 h-8 rounded-full mb-2"
+                        style={{ backgroundColor: theme.bgColor }}
+                      />
+                      <span className="text-sm font-medium">{theme.name}</span>
+                    </button>
                   ))}
                 </div>
               </div>
