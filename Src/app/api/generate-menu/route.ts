@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
       fridgeItems: FridgeItem[], 
       settings: Settings, 
       userComment?: string, 
-      dishCount?: number,
+      dishCount?: string | number,
       enableShopping?: boolean,
       shoppingBudget?: number 
     } = body;
@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const generatedMenu = await generateMenuWithClaude(fridgeItems, settings, userComment, dishCount || 3, enableShopping, shoppingBudget || 500);
+    const dishCountNum = dishCount ? (typeof dishCount === 'string' ? parseInt(dishCount) || 3 : dishCount) : 3;
+    const generatedMenu = await generateMenuWithClaude(fridgeItems, settings, userComment, dishCountNum, enableShopping, shoppingBudget || 500);
     
     return NextResponse.json({ menu: generatedMenu });
   } catch (error) {

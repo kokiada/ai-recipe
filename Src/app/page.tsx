@@ -102,7 +102,7 @@ export default function RakurakuKondate() {
   const [editForm, setEditForm] = useState({ name: "", quantity: "", unit: "" })
   const [showAddForm, setShowAddForm] = useState(false)
   const [userComment, setUserComment] = useState("")
-  const [dishCount, setDishCount] = useState<number>(3)
+  const [dishCount, setDishCount] = useState<string>("")
   const [enableShopping, setEnableShopping] = useState(false)
   const [shoppingBudget, setShoppingBudget] = useState<number>(500)
 
@@ -225,22 +225,12 @@ export default function RakurakuKondate() {
             </label>
             <div className="flex items-center space-x-3">
               <input
-                type="number"
+                type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                min="1"
-                max="10"
+                placeholder="3"
                 value={dishCount}
-                onChange={(e) => {
-                  const value = e.target.value
-                  if (value === '') {
-                    return
-                  }
-                  const numValue = Number(value)
-                  if (!isNaN(numValue)) {
-                    setDishCount(Math.max(1, Math.min(10, numValue)))
-                  }
-                }}
+                onChange={(e) => setDishCount(e.target.value)}
                 className="w-16 p-3 border border-orange-300 rounded-lg text-center text-lg font-medium focus:outline-none focus:ring-2 focus:ring-orange-400"
                 autoComplete="off"
               />
