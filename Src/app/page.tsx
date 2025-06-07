@@ -258,20 +258,20 @@ export default function RakurakuKondate() {
           </div>
 
           {/* 買い足し設定 */}
-          <div className="bg-white/70 rounded-xl p-4 border border-orange-200">
+          <div className="bg-white/70 rounded-xl p-4 border border-theme-secondary">
             <div className="flex items-center space-x-3 mb-3">
               <Checkbox
                 id="enable-shopping"
                 checked={enableShopping}
                 onCheckedChange={(checked) => setEnableShopping(checked as boolean)}
               />
-              <Label htmlFor="enable-shopping" className="text-base font-medium text-orange-700">
+              <Label htmlFor="enable-shopping" className="text-base font-medium text-theme-text">
                 🛒 食材を買い足す
               </Label>
             </div>
             {enableShopping && (
               <div className="ml-6 flex items-center space-x-3">
-                <Label className="text-sm text-orange-700">予算：</Label>
+                <Label className="text-sm text-theme-text">予算：</Label>
                 <input
                   type="number"
                   min="100"
@@ -279,23 +279,23 @@ export default function RakurakuKondate() {
                   step="50"
                   value={shoppingBudget}
                   onChange={(e) => setShoppingBudget(Math.max(100, Math.min(2000, Number(e.target.value) || 500)))}
-                  className="w-20 p-2 border border-orange-300 rounded-lg text-center text-base focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-20 p-2 border border-theme-secondary rounded-lg text-center text-base focus:outline-none focus:ring-2 focus:ring-theme-primary"
                 />
-                <span className="text-base text-orange-700">円</span>
+                <span className="text-base text-theme-text">円</span>
               </div>
             )}
           </div>
 
           {/* コメント入力欄 */}
-          <div className="bg-white/70 rounded-xl p-4 border border-orange-200">
-            <label className="block text-sm font-medium text-orange-700 mb-2">
+          <div className="bg-white/70 rounded-xl p-4 border border-theme-secondary">
+            <label className="block text-sm font-medium text-theme-text mb-2">
               💬 コメント（例：おつまみ、さっぱり系、など）
             </label>
             <textarea
               value={userComment}
               onChange={(e) => setUserComment(e.target.value)}
               placeholder="作りたい料理のリクエストを入力してください"
-              className="w-full p-3 border border-orange-300 rounded-lg text-base resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full p-3 border border-theme-secondary rounded-lg text-base resize-none focus:outline-none focus:ring-2 focus:ring-theme-primary"
               rows={2}
             />
           </div>
@@ -304,7 +304,13 @@ export default function RakurakuKondate() {
           <Button
             onClick={generateMenuWithAI}
             disabled={isGeneratingMenu}
-            className="w-full h-48 text-2xl font-bold bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-400 text-white rounded-3xl shadow-xl border-4 border-purple-300 hover:border-purple-400 transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+            className="w-full h-48 text-2xl font-bold text-white rounded-3xl shadow-xl border-4 transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:from-gray-300 disabled:to-gray-400"
+            style={{
+              background: isGeneratingMenu 
+                ? 'linear-gradient(to right, #9ca3af, #9ca3af)' 
+                : `linear-gradient(to right, #8b5cf6, var(--theme-primary))`,
+              borderColor: isGeneratingMenu ? '#9ca3af' : '#8b5cf6'
+            }}
           >
             <div className="flex flex-col items-center space-y-2">
               <span className="text-4xl">{isGeneratingMenu ? "🤖" : "✨"}</span>
@@ -347,50 +353,39 @@ export default function RakurakuKondate() {
         <div className="max-w-sm mx-auto">
           <div className="flex items-center mb-6 pt-4">
             <Button variant="ghost" size="sm" onClick={() => setCurrentScreen("home")} className="p-2">
-              <ArrowLeft className="h-6 w-6 text-orange-800" />
+              <ArrowLeft className="h-6 w-6 text-theme-text" />
             </Button>
-            <h2 className="text-2xl font-bold text-orange-800 ml-4">今日の献立</h2>
+            <h2 className="text-2xl font-bold text-theme-text ml-4">今日の献立</h2>
           </div>
 
           {/* 献立パターン表示 */}
           <div className="text-center mb-4">
-            <span className="text-sm text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
+            <span className="text-sm text-theme-text bg-theme-secondary px-3 py-1 rounded-full">
               ✨ AI生成 • {currentMenu?.difficulty}
             </span>
           </div>
 
           <div className="space-y-4 mb-6">
             {currentMenu?.dishes?.map((dish, index) => {
-              const borderColors = [
-                "border-orange-400",
-                "border-green-400", 
-                "border-blue-400",
-                "border-purple-400",
-                "border-pink-400",
-                "border-indigo-400",
-                "border-yellow-400",
-                "border-red-400",
-                "border-teal-400",
-                "border-cyan-400"
-              ];
-              
-              const textColors = [
-                "text-orange-700",
-                "text-green-700",
-                "text-blue-700", 
-                "text-purple-700",
-                "text-pink-700",
-                "text-indigo-700",
-                "text-yellow-700",
-                "text-red-700",
-                "text-teal-700",
-                "text-cyan-700"
+              const colorPalette = [
+                { border: "var(--theme-primary)", text: "var(--theme-text)" },
+                { border: "#10b981", text: "#047857" },
+                { border: "#3b82f6", text: "#1d4ed8" },
+                { border: "#8b5cf6", text: "#7c3aed" },
+                { border: "#ec4899", text: "#be185d" },
+                { border: "#6366f1", text: "#4338ca" },
+                { border: "#f59e0b", text: "#d97706" },
+                { border: "#ef4444", text: "#dc2626" },
+                { border: "#14b8a6", text: "#0f766e" },
+                { border: "#06b6d4", text: "#0e7490" }
               ];
 
+              const colors = colorPalette[index % colorPalette.length];
+              
               return (
-                <Card key={index} className={`bg-white shadow-md border-l-4 ${borderColors[index % borderColors.length]}`}>
+                <Card key={index} className="bg-white shadow-md border-l-4" style={{ borderLeftColor: colors.border }}>
                   <CardHeader className="pb-2">
-                    <CardTitle className={`text-lg ${textColors[index % textColors.length]} flex items-center`}>
+                    <CardTitle className="text-lg flex items-center" style={{ color: colors.text }}>
                       🍽️ {index + 1}品目
                     </CardTitle>
                   </CardHeader>
@@ -406,15 +401,15 @@ export default function RakurakuKondate() {
           </div>
 
           {/* 合計情報 */}
-          <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4 rounded-xl mb-6 border border-orange-200">
+          <div className="bg-theme-secondary p-4 rounded-xl mb-6 border border-theme-secondary">
             <div className="flex justify-center items-center mb-2">
-              <p className="text-lg font-bold text-orange-800">
+              <p className="text-lg font-bold text-theme-text">
                 🔥 合計: {currentMenu?.totalCalories}kcal
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               {currentMenu?.tags.map((tag, index) => (
-                <span key={index} className="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
+                <span key={index} className="text-xs bg-theme-secondary text-theme-text px-2 py-1 rounded-full">
                   {tag}
                 </span>
               )) || []}
@@ -456,7 +451,13 @@ export default function RakurakuKondate() {
           )}
 
           <div className="space-y-3">
-            <Button className="w-full h-16 text-lg font-semibold bg-orange-500 hover:bg-orange-600 text-white rounded-xl shadow-lg">
+            <Button 
+              className="w-full h-16 text-lg font-semibold text-white rounded-xl shadow-lg"
+              style={{ 
+                backgroundColor: 'var(--theme-primary)',
+                borderColor: 'var(--theme-primary)'
+              }}
+            >
               <div className="flex flex-col items-center">
                 <span>✅ この献立にする</span>
                 <span className="text-sm opacity-90">レシピを見る</span>
@@ -466,7 +467,11 @@ export default function RakurakuKondate() {
             <Button 
               onClick={generateMenuWithAI}
               variant="outline" 
-              className="w-full h-14 text-base border-2 border-purple-300 text-purple-700 hover:bg-purple-50 rounded-xl"
+              className="w-full h-14 text-base border-2 rounded-xl"
+              style={{
+                borderColor: 'var(--theme-primary)',
+                color: 'var(--theme-text)'
+              }}
             >
               ✨ AI献立を再生成
             </Button>
