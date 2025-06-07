@@ -231,7 +231,16 @@ export default function RakurakuKondate() {
                 min="1"
                 max="10"
                 value={dishCount}
-                onChange={(e) => setDishCount(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (value === '') {
+                    return
+                  }
+                  const numValue = Number(value)
+                  if (!isNaN(numValue)) {
+                    setDishCount(Math.max(1, Math.min(10, numValue)))
+                  }
+                }}
                 className="w-16 p-3 border border-orange-300 rounded-lg text-center text-lg font-medium focus:outline-none focus:ring-2 focus:ring-orange-400"
                 autoComplete="off"
               />
