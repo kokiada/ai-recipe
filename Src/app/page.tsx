@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,6 +52,7 @@ interface Settings {
   adults: string
   children: string
   allergies: string[]
+  backgroundColor: string
 }
 
 export default function RakurakuKondate() {
@@ -76,10 +77,25 @@ export default function RakurakuKondate() {
     { id: "15", name: "塩", emoji: "🧂", available: true, quantity: "1", unit: "袋" },
   ])
 
-  const [settings, setSettings] = useState<Settings>({
-    adults: "2",
-    children: "1",
-    allergies: [],
+  const [settings, setSettings] = useState<Settings>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('rakuraku-settings')
+      if (saved) {
+        const parsedSettings = JSON.parse(saved)
+        return {
+          adults: parsedSettings.adults || "2",
+          children: parsedSettings.children || "1", 
+          allergies: parsedSettings.allergies || [],
+          backgroundColor: parsedSettings.backgroundColor || "#ffffff"
+        }
+      }
+    }
+    return {
+      adults: "2",
+      children: "1",
+      allergies: [],
+      backgroundColor: "#ffffff",
+    }
   })
 
   const [editingItem, setEditingItem] = useState<string | null>(null)
@@ -90,6 +106,13 @@ export default function RakurakuKondate() {
   const [enableShopping, setEnableShopping] = useState(false)
   const [shoppingBudget, setShoppingBudget] = useState<number>(500)
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--background', settings.backgroundColor)
+  }, [settings.backgroundColor])
+
+  useEffect(() => {
+    localStorage.setItem('rakuraku-settings', JSON.stringify(settings))
+  }, [settings])
 
   const toggleFridgeItem = (id: string) => {
     setFridgeItems((prev) => prev.map((item) => (item.id === id ? { ...item, available: !item.available } : item)))
@@ -685,6 +708,43 @@ export default function RakurakuKondate() {
                     </Label>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg text-gray-800">背景色設定</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Label className="text-base font-medium text-gray-700 block">テーマカラー</Label>
+                <div className="grid grid-cols-5 gap-3">
+                  {[
+                    { name: "ホワイト", color: "#ffffff" },
+                    { name: "クリーム", color: "#fefce8" },
+                    { name: "ピンク", color: "#fce7f3" },
+                    { name: "ブルー", color: "#dbeafe" },
+                    { name: "グリーン", color: "#dcfce7" },
+                    { name: "ラベンダー", color: "#e0e7ff" },
+                    { name: "ピーチ", color: "#fed7d7" },
+                    { name: "ミント", color: "#d1fae5" },
+                    { name: "スカイ", color: "#e0f2fe" },
+                    { name: "ライム", color: "#ecfccb" }
+                  ].map((theme) => (
+                    <button
+                      key={theme.name}
+                      onClick={() => setSettings(prev => ({ ...prev, backgroundColor: theme.color }))}
+                      className={`w-12 h-12 rounded-lg border-2 transition-all ${
+                        settings.backgroundColor === theme.color 
+                          ? "border-gray-800 border-4" 
+                          : "border-gray-300 hover:border-gray-500"
+                      }`}
+                      style={{ backgroundColor: theme.color }}
+                      title={theme.name}
+                    />
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
