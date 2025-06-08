@@ -1,20 +1,21 @@
-# らくらく献立 (RakuRaku Menu)
+# のこりものナビ (Nokorimono Navi)
 
-> 毎日の「今日何作ろう？」を3秒で解決！  
-> AI × 冷蔵庫で瞬時に献立提案する主婦特化型アプリ
+> 冷蔵庫の残り物から3秒で献立決定！  
+> 余った食材を無駄なく活用する残り物活用アプリ
 
 ![Next.js](https://img.shields.io/badge/Next.js-15.2.4-black)
 ![React](https://img.shields.io/badge/React-19-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-cyan)
 ![Claude API](https://img.shields.io/badge/Claude-3.5%20Sonnet-purple)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-green)
 
 ## ✨ 特徴
 
-### 🍽️ AI献立生成
-- **Claude 3.5 Sonnet**を活用した高精度な献立提案
-- 冷蔵庫の材料**のみ**を使用した現実的なレシピ
-- 家族構成・アレルギー情報を考慮
+### 🤖 マルチAI献立生成
+- **Claude 3.5 Sonnet** & **OpenAI GPT-4o** の選択可能な2つのAI
+- 冷蔵庫の残り物を**最大限活用**した現実的なレシピ提案
+- 家族構成・アレルギー情報・予算を考慮した買い足し提案
 - 調理時間・カロリー・難易度付きの詳細情報
 
 ### 🥬 スマート冷蔵庫管理
@@ -23,10 +24,17 @@
 - 数量・単位の詳細管理
 - 食材の追加・編集・削除機能
 
-### ⚙️ 家族対応設定
+### ⚙️ カスタマイズ設定
 - 大人・子供の人数設定
 - 主要アレルギー対応（卵、乳製品、小麦、そば、えび・かに）
+- AIプロバイダー選択（Claude / OpenAI）
+- テーマカラー・背景色のカスタマイズ
 - 設定情報をAI献立生成に反映
+
+### 🍳 クックパッド連携
+- 料理詳細画面から**クックパッド**に直接リンク
+- 料理名での自動検索で豊富なレシピにアクセス
+- 新しいタブで開くためアプリから離れない
 
 ### 📱 モバイルファースト設計
 - 大きなタップ可能ボタン（44px+）
@@ -39,6 +47,7 @@
 - Node.js 18.0以降
 - npm または yarn
 - Anthropic API キー（Claude 3.5 Sonnet用）
+- OpenAI API キー（GPT-4o用）※オプション
 
 ### インストール
 
@@ -60,8 +69,14 @@ cp .env.local.example .env.local
 `.env.local`ファイルを作成し、以下を設定：
 
 ```env
+# 必須：Claude API（デフォルトAI）
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# オプション：OpenAI API（選択可能）
+OPENAI_API_KEY=your_openai_api_key_here
 ```
+
+> **注意**: 最低でもClaude APIキーは必須です。OpenAIを使用しない場合は設定不要です。
 
 ### 開発サーバー起動
 
@@ -79,21 +94,20 @@ npm run dev
 3. 必要に応じて数量・単位を編集
 4. 新しい食材を「+ 追加」で登録
 
-### 2. 家族設定
+### 2. 詳細設定
 1. 「⚙️ 設定」をタップ
 2. 大人・子供の人数を選択
 3. アレルギー情報をチェック
-4. 「保存」で設定を確定
+4. AIプロバイダーを選択（Claude / OpenAI）
+5. テーマカラー・背景色をカスタマイズ
+6. 「保存」で設定を確定
 
 ### 3. AI献立生成
-1. ホーム画面で「✨ AI献立生成」をタップ
-2. 冷蔵庫の材料から自動で献立を提案
-3. 主菜・副菜・汁物の詳細レシピを確認
-4. 気に入らない場合は「AI献立を再生成」
-
-### 4. おまかせ献立
-- 「🍽️ おまかせ献立」で予め用意された5パターンから選択
-- 「他の案を見る」で別パターンを確認
+1. ホーム画面で品数・予算・コメントを入力
+2. 「✨ AI献立生成」をタップ
+3. 残り物から最適な献立を自動提案
+4. 料理をタップして**クックパッド**でレシピ確認
+5. 気に入らない場合は「AI献立を再生成」
 
 ## 🛠️ 技術スタック
 
@@ -105,8 +119,10 @@ npm run dev
 - **shadcn/ui** - アクセシブルなUIコンポーネント
 
 ### AI・API
-- **Anthropic Claude 3.5 Sonnet** - 献立生成AI
+- **Anthropic Claude 3.5 Sonnet** - 高精度日本語理解の献立生成AI
+- **OpenAI GPT-4o** - バランス重視の献立生成AI
 - **@anthropic-ai/sdk** - Claude API クライアント
+- **openai** - OpenAI API クライアント
 
 ### アイコン・フォント
 - **Lucide React** - アイコンライブラリ
@@ -151,16 +167,18 @@ npm run lint
 ## 🎯 ロードマップ
 
 ### v1.1（次回リリース）
-- [ ] レシピ詳細画面の実装
-- [ ] 買い物リスト自動生成
-- [ ] 献立履歴機能
-- [ ] オフライン対応
+- [x] ~~クックパッド連携~~ ✅
+- [x] ~~マルチAI対応（Claude + OpenAI）~~ ✅
+- [x] ~~テーマカスタマイズ~~ ✅
+- [ ] PWA対応（オフライン機能）
+- [ ] 献立履歴・お気に入り機能
 
 ### v1.2（将来の機能）
 - [ ] 季節・天気による献立提案
-- [ ] 栄養価表示・管理
+- [ ] 栄養価詳細表示・管理
+- [ ] レシピのメモ・評価機能
 - [ ] SNSシェア機能
-- [ ] 多言語対応
+- [ ] 多言語対応（英語・中国語）
 
 ## 🤝 コントリビューション
 
@@ -177,10 +195,12 @@ npm run lint
 ## 🙏 謝辞
 
 - [Anthropic](https://www.anthropic.com/) - Claude 3.5 Sonnet API
+- [OpenAI](https://openai.com/) - GPT-4o API
+- [クックパッド](https://cookpad.com/) - レシピ検索連携
 - [Vercel](https://vercel.com/) - Next.js フレームワーク
 - [shadcn/ui](https://ui.shadcn.com/) - UIコンポーネント
 - [Lucide](https://lucide.dev/) - アイコンライブラリ
 
 ---
 
-**らくらく献立** - 毎日の献立決めをもっと楽に、もっと楽しく！ 🍽️✨
+**のこりものナビ** - 冷蔵庫の残り物を美味しい献立に変える魔法のアプリ！ 🥬✨🍽️
