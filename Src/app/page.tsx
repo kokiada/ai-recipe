@@ -829,6 +829,9 @@ export default function RakurakuKondate() {
   const renderRecipeModal = () => {
     if (!selectedDish) return null;
 
+    // クックパッド検索URL生成
+    const cookpadSearchUrl = `https://cookpad.com/search/${encodeURIComponent(selectedDish.name)}`;
+
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
@@ -850,46 +853,38 @@ export default function RakurakuKondate() {
                 <p className="text-sm text-theme-text font-medium">🔥 カロリー: {selectedDish.calories}kcal</p>
               </div>
 
-              {selectedDish.ingredients && selectedDish.ingredients.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">🥬 材料</h4>
-                  <ul className="space-y-1">
-                    {selectedDish.ingredients.map((ingredient, index) => (
-                      <li key={index} className="text-sm text-gray-600 pl-2">
-                        • {ingredient}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {/* クックパッド検索ボタン */}
+              <div className="bg-gradient-to-r from-orange-100 to-red-100 p-4 rounded-lg border border-orange-200">
+                <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
+                  👩‍🍳 レシピを探す
+                </h4>
+                <a
+                  href={cookpadSearchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full"
+                >
+                  <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                    <div className="flex items-center justify-center space-x-2">
+                      <span>🍳</span>
+                      <span>クックパッドでレシピを見る</span>
+                      <span className="text-xs opacity-80">📱</span>
+                    </div>
+                  </Button>
+                </a>
+                <p className="text-xs text-orange-600 mt-2 text-center">
+                  新しいタブでクックパッドが開きます
+                </p>
+              </div>
 
-              {selectedDish.recipe && selectedDish.recipe.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">👩‍🍳 作り方</h4>
-                  <ol className="space-y-2">
-                    {selectedDish.recipe.map((step, index) => (
-                      <li key={index} className="text-sm text-gray-600 flex">
-                        <span className="font-medium text-theme-text mr-2 min-w-[20px]">
-                          {index + 1}.
-                        </span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-
-              {(!selectedDish.ingredients || selectedDish.ingredients.length === 0) && 
-               (!selectedDish.recipe || selectedDish.recipe.length === 0) && (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">詳細なレシピ情報はまだ準備中です</p>
-                </div>
-              )}
+              <div className="text-center py-4">
+                <p className="text-gray-500 text-sm">詳しいレシピはクックパッドでご確認ください</p>
+              </div>
             </div>
 
             <Button 
               onClick={() => setSelectedDish(null)}
-              className="w-full mt-6 bg-theme-primary text-white hover:opacity-90"
+              className="w-full mt-6 bg-gray-500 text-white hover:bg-gray-600"
             >
               閉じる
             </Button>
