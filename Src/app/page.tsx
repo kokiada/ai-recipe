@@ -108,6 +108,7 @@ export default function RakurakuKondate() {
   const [dishCount, setDishCount] = useState<string>("")
   const [enableShopping, setEnableShopping] = useState(false)
   const [shoppingBudget, setShoppingBudget] = useState<number>(500)
+  const [selectedDish, setSelectedDish] = useState<Dish | null>(null)
 
   useEffect(() => {
     document.documentElement.style.setProperty('--background', settings.backgroundColor)
@@ -233,7 +234,7 @@ export default function RakurakuKondate() {
   const renderHomeScreen = () => (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 p-4">
       <div className="max-w-sm mx-auto pt-8">
-        <h1 className="text-3xl font-bold text-center text-theme-text mb-8">らくらく献立</h1>
+        <h1 className="text-3xl font-bold text-center text-theme-text mb-8">のこりものナビ</h1>
 
         <div className="space-y-6">
           {/* コメント入力欄 */}
@@ -316,7 +317,7 @@ export default function RakurakuKondate() {
               <span className="text-4xl">{isGeneratingMenu ? "🤖" : "✨"}</span>
               <span>{isGeneratingMenu ? "献立作成中..." : "AI献立生成"}</span>
               <span className="text-lg font-medium">
-                {isGeneratingMenu ? "冷蔵庫の食材から献立を考えています" : "冷蔵庫の材料から作る！"}
+                {isGeneratingMenu ? "残り物から美味しい献立を考えています" : "余った食材を美味しく活用！"}
               </span>
             </div>
           </Button>
@@ -383,10 +384,16 @@ export default function RakurakuKondate() {
               const colors = colorPalette[index % colorPalette.length];
               
               return (
-                <Card key={index} className="bg-white shadow-md border-l-4" style={{ borderLeftColor: colors.border }}>
+                <Card 
+                  key={index} 
+                  className="bg-white shadow-md border-l-4 cursor-pointer hover:shadow-lg transition-shadow" 
+                  style={{ borderLeftColor: colors.border }}
+                  onClick={() => setSelectedDish(dish)}
+                >
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center" style={{ color: colors.text }}>
-                      🍽️ {index + 1}品目
+                    <CardTitle className="text-lg flex items-center justify-between" style={{ color: colors.text }}>
+                      <span>🍽️ {index + 1}品目</span>
+                      <span className="text-sm text-gray-500">タップでレシピ表示</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -819,12 +826,86 @@ export default function RakurakuKondate() {
     </div>
   )
 
+  const renderRecipeModal = () => {
+    if (!selectedDish) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-800">{selectedDish.name}</h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSelectedDish(null)}
+                className="p-2"
+              >
+                ❌
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-theme-secondary p-3 rounded-lg">
+                <p className="text-sm text-theme-text font-medium">🔥 カロリー: {selectedDish.calories}kcal</p>
+              </div>
+
+              {selectedDish.ingredients && selectedDish.ingredients.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-2">🥬 材料</h4>
+                  <ul className="space-y-1">
+                    {selectedDish.ingredients.map((ingredient, index) => (
+                      <li key={index} className="text-sm text-gray-600 pl-2">
+                        • {ingredient}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedDish.recipe && selectedDish.recipe.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-2">👩‍🍳 作り方</h4>
+                  <ol className="space-y-2">
+                    {selectedDish.recipe.map((step, index) => (
+                      <li key={index} className="text-sm text-gray-600 flex">
+                        <span className="font-medium text-theme-text mr-2 min-w-[20px]">
+                          {index + 1}.
+                        </span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {(!selectedDish.ingredients || selectedDish.ingredients.length === 0) && 
+               (!selectedDish.recipe || selectedDish.recipe.length === 0) && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">詳細なレシピ情報はまだ準備中です</p>
+                </div>
+              )}
+            </div>
+
+            <Button 
+              onClick={() => setSelectedDish(null)}
+              className="w-full mt-6 bg-theme-primary text-white hover:opacity-90"
+            >
+              閉じる
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="font-sans">
       {currentScreen === "home" && renderHomeScreen()}
       {currentScreen === "menu" && renderMenuScreen()}
       {currentScreen === "fridge" && renderFridgeScreen()}
       {currentScreen === "settings" && renderSettingsScreen()}
+      {selectedDish && renderRecipeModal()}
     </div>
   )
 }

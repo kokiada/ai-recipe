@@ -1,7 +1,7 @@
 {
-  "name": "らくらく献立",
-  "short_name": "らくらく献立",
-  "description": "冷蔵庫の食材からAIが献立を提案する便利アプリ",
+  "name": "のこりものナビ",
+  "short_name": "のこりものナビ",
+  "description": "冷蔵庫の残り物から瞬時に献立を提案！余った食材を無駄なく活用できる残り物活用アプリ",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFF7ED",

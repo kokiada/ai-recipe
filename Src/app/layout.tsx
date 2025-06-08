@@ -13,15 +13,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "らくらく献立 - 3秒で今日の献立が決まる",
-  description: "毎日の献立決めを3秒で解決。冷蔵庫の食材から瞬時に今晩の献立を提案する主婦特化型献立支援アプリ",
+  title: "のこりものナビ - 冷蔵庫の残り物で今日の献立が決まる",
+  description: "冷蔵庫の残り物から3秒で献立決定！余った食材を無駄なく活用して、今晩の献立を瞬時に提案する残り物活用アプリ",
   manifest: "/manifest.json",
   themeColor: "#EA580C",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "らくらく献立"
+    title: "のこりものナビ"
   },
   icons: {
     icon: [
