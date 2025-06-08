@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateMenuWithClaude, FridgeItem, Settings } from '@/lib/claude';
+import { generateMenu, FridgeItem, Settings } from '@/lib/claude';
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     const dishCountNum = dishCount ? (typeof dishCount === 'string' ? parseInt(dishCount) || 3 : dishCount) : 3;
-    const generatedMenu = await generateMenuWithClaude(fridgeItems, settings, userComment, dishCountNum, enableShopping, shoppingBudget || 500);
+    const generatedMenu = await generateMenu(fridgeItems, settings, userComment, dishCountNum, enableShopping, shoppingBudget || 500);
     
     return NextResponse.json({ menu: generatedMenu });
   } catch (error) {

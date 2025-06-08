@@ -54,6 +54,7 @@ interface Settings {
   allergies: string[]
   backgroundColor: string
   themeColor: string
+  aiProvider: 'claude' | 'openai'
 }
 
 export default function RakurakuKondate() {
@@ -88,7 +89,8 @@ export default function RakurakuKondate() {
           children: parsedSettings.children || "1", 
           allergies: parsedSettings.allergies || [],
           backgroundColor: parsedSettings.backgroundColor || "#ffffff",
-          themeColor: parsedSettings.themeColor || "orange"
+          themeColor: parsedSettings.themeColor || "orange",
+          aiProvider: parsedSettings.aiProvider || "claude"
         }
       }
     }
@@ -98,6 +100,7 @@ export default function RakurakuKondate() {
       allergies: [],
       backgroundColor: "#ffffff",
       themeColor: "orange",
+      aiProvider: "claude" as const,
     }
   })
 
@@ -811,6 +814,37 @@ export default function RakurakuKondate() {
                     </button>
                   ))}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg text-gray-800">AIプロバイダー設定</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Label className="text-base font-medium text-gray-700 block">使用するAI</Label>
+                <RadioGroup
+                  value={settings.aiProvider}
+                  onValueChange={(value: 'claude' | 'openai') => setSettings((prev) => ({ ...prev, aiProvider: value }))}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <RadioGroupItem value="claude" id="claude" />
+                    <div className="flex-1">
+                      <Label htmlFor="claude" className="text-base font-medium">Claude (Anthropic)</Label>
+                      <p className="text-sm text-gray-600">高精度な日本語理解と創造的な提案が得意</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <RadioGroupItem value="openai" id="openai" />
+                    <div className="flex-1">
+                      <Label htmlFor="openai" className="text-base font-medium">GPT-4o (OpenAI)</Label>
+                      <p className="text-sm text-gray-600">バランスの取れた料理提案とレシピ生成</p>
+                    </div>
+                  </div>
+                </RadioGroup>
               </div>
             </CardContent>
           </Card>
