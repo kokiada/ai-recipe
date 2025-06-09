@@ -887,6 +887,23 @@ export default function RakurakuKondate() {
                 <p className="text-sm text-theme-text font-medium">🔥 カロリー: {selectedDish.calories}kcal</p>
               </div>
 
+              {/* 使用材料リスト */}
+              {selectedDish.ingredients && selectedDish.ingredients.length > 0 && (
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-green-800 mb-3 flex items-center">
+                    🥬 使用する材料
+                  </h4>
+                  <div className="space-y-2">
+                    {selectedDish.ingredients.map((ingredient, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                        <span className="text-sm text-green-700">{ingredient}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* クックパッド検索ボタン */}
               <div className="bg-gradient-to-r from-orange-100 to-red-100 p-4 rounded-lg border border-orange-200">
                 <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
